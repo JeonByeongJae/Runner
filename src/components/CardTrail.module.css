@@ -46,13 +46,20 @@
 }
 
 .guessable:hover {
-  border-color: var(--color-gold);
+  border-color: #aaa;
   opacity: 0.85;
 }
 
+/* 추리 값이 배정된 카드 (골드) */
 .selected {
   border: 2px solid var(--color-gold) !important;
   box-shadow: 0 0 6px var(--color-gold);
+}
+
+/* 현재 번호 입력 중인 카드 (밝은 하늘색) */
+.active {
+  border: 2px solid #4fc3f7 !important;
+  box-shadow: 0 0 8px #4fc3f7;
 }
 
 .value {
@@ -77,4 +84,26 @@
   padding: 1px 3px;
   font-size: 7px;
   color: var(--color-gold);
+}
+
+/* 추격자가 이 카드에 배정한 추리 숫자 */
+.guessBadge {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  background: rgba(79, 195, 247, 0.25);
+  border: 1px solid #4fc3f7;
+  border-radius: 2px;
+  padding: 1px 3px;
+  font-size: 9px;
+  font-weight: bold;
+  color: #4fc3f7;
+}
+
+/* 카드 선택 안내 문구 */
+.activeHint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #4fc3f7;
+  text-align: center;
 }

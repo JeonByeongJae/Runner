@@ -9,6 +9,7 @@ import {
   toggleGuess,
   submitGuess,
   endChaserTurn,
+  clearGuessAttempt,
 } from '../firebase/roomDb'
 import TurnBanner from '../components/TurnBanner'
 import CardTrail from '../components/CardTrail'
@@ -104,6 +105,8 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
   const handleBoardToggle = async (num: number) => {
     if (myRole !== 'chaser' || !canAct || activeTrailIdx === null) return
     await toggleGuess(roomId, activeTrailIdx, num)
+    // 번호 배정 후 activeTrailIdx 해제 (다음 카드 선택 유도)
+    setActiveTrailIdx(null)
   }
 
   const handleSubmitGuess = async () => {
@@ -113,6 +116,12 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
     if (guessResultTimer.current) clearTimeout(guessResultTimer.current)
     setGuessResult(correct ? 'correct' : 'wrong')
     guessResultTimer.current = setTimeout(() => setGuessResult(null), 2000)
+    // submitGuess 내부에서 턴 종료까지 처리됨
+  }
+
+  const handleClearGuess = async () => {
+    await clearGuessAttempt(roomId)
+    setActiveTrailIdx(null)
   }
 
   const handleEndChaserTurn = async () => {
@@ -134,7 +143,7 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
 
       {guessResult && (
         <div className={`${styles.guessResult} ${guessResult === 'correct' ? styles.guessCorrect : styles.guessWrong}`}>
-          {guessResult === 'correct' ? '정답! 카드가 공개됩니다' : '틀렸습니다. 다시 시도하세요'}
+          {guessResult === 'correct' ? '정답! 카드가 공개됩니다' : '틀렸습니다'}
         </div>
       )}
 
@@ -143,6 +152,8 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
         myRole={myRole}
         onCardTap={handleTrailTap}
         selectedIndices={guessSelectedIndices}
+        activeIdx={activeTrailIdx}
+        guessAttempt={room.guessAttempt}
       />
 
       <CardPiles piles={room.piles} canDraw={canDraw} onDraw={handleDraw} />
@@ -160,7 +171,7 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
       {myRole === 'chaser' && (
         <ChaserBoard
           board={room.chaserBoard}
-          onToggle={canAct ? handleBoardToggle : undefined}
+          onToggle={canAct && activeTrailIdx !== null ? handleBoardToggle : undefined}
         />
       )}
 
@@ -179,6 +190,7 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
         guessCount={room.guessAttempt.length}
         onSubmitGuess={handleSubmitGuess}
         onEndChaserTurn={handleEndChaserTurn}
+        onClearGuess={handleClearGuess}
       />
     </div>
   )

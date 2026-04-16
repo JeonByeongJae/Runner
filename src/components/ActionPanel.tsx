@@ -16,13 +16,14 @@ interface Props {
   guessCount: number
   onSubmitGuess: () => void
   onEndChaserTurn: () => void
+  onClearGuess: () => void
 }
 
 export default function ActionPanel({
   myRole, turn, phase, turnNumber,
   placedThisTurn, selectedBoosters, pendingCard,
   onConfirmPlace, onPass, onEndTurn, onClearBoosters,
-  guessCount, onSubmitGuess, onEndChaserTurn,
+  guessCount, onSubmitGuess, onEndChaserTurn, onClearGuess,
 }: Props) {
   const isMyTurn = turn === myRole
   if (!isMyTurn || phase === 'draw') return null
@@ -63,14 +64,20 @@ export default function ActionPanel({
   return (
     <div className={styles.panel}>
       <div className={styles.buttons}>
-        {guessCount > 0 && (
-          <button className={styles.primary} onClick={onSubmitGuess}>
-            추리 제출 ({guessCount}장)
+        {guessCount > 0 ? (
+          <>
+            <button className={styles.primary} onClick={onSubmitGuess}>
+              추리 제출 ({guessCount}장)
+            </button>
+            <button className={styles.secondary} onClick={onClearGuess}>
+              초기화
+            </button>
+          </>
+        ) : (
+          <button className={styles.secondary} onClick={onEndChaserTurn}>
+            패스 (턴 넘기기)
           </button>
         )}
-        <button className={styles.secondary} onClick={onEndChaserTurn}>
-          {guessCount === 0 ? '패스 (턴 넘기기)' : '추리 취소'}
-        </button>
       </div>
     </div>
   )

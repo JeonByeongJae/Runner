@@ -224,13 +224,27 @@ export async function submitGuess(roomId: string): Promise<boolean> {
       trail,
       chaserBoard,
       guessAttempt: [],
-      ...(winner ? { winner, status: 'finished' } : {}),
+      ...(winner
+        ? { winner, status: 'finished' }
+        : { turn: 'runner', phase: 'draw', turnNumber: room.turnNumber + 1, drawsRemaining: 1 }),
     })
     return true
   } else {
-    await update(ref(db, `rooms/${roomId}`), { guessAttempt: [] })
+    // 틀렸으면 턴 넘기기
+    await update(ref(db, `rooms/${roomId}`), {
+      guessAttempt: [],
+      turn: 'runner',
+      phase: 'draw',
+      turnNumber: room.turnNumber + 1,
+      drawsRemaining: 1,
+    })
     return false
   }
+}
+
+// 추격자: 추리 초기화 (제출 없이 선택 취소)
+export async function clearGuessAttempt(roomId: string): Promise<void> {
+  await update(ref(db, `rooms/${roomId}`), { guessAttempt: [] })
 }
 
 // 추격자 턴 종료 → 도망자 턴
