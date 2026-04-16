@@ -8,3 +8,29 @@
   padding: 12px;
   padding-bottom: 80px;
 }
+
+.guessResult {
+  text-align: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  animation: fadeIn 0.2s ease;
+}
+
+.guessCorrect {
+  background: rgba(80, 180, 80, 0.25);
+  border: 1px solid #50b450;
+  color: #90ee90;
+}
+
+.guessWrong {
+  background: rgba(200, 60, 60, 0.25);
+  border: 1px solid #c83c3c;
+  color: #ff9090;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

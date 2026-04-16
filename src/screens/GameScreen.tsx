@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type { GameRoom, Role, Pile } from '../types/game'
 import { getPlayableCards } from '../utils/highlight'
 import {
@@ -27,8 +27,9 @@ interface Props {
 export default function GameScreen({ room, roomId, myRole }: Props) {
   const [selectedBoosters, setSelectedBoosters] = useState<number[]>([])
   const [pendingCard, setPendingCard] = useState<number | null>(null)
-  const [placedThisTurn, setPlacedThisTurn] = useState(0)
   const [activeTrailIdx, setActiveTrailIdx] = useState<number | null>(null)
+  const [guessResult, setGuessResult] = useState<'correct' | 'wrong' | null>(null)
+  const guessResultTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const isMyTurn = room.turn === myRole
   const canDraw = isMyTurn && room.phase === 'draw'
@@ -40,6 +41,13 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
     canAct && myRole === 'runner'
       ? getPlayableCards(room.runnerHand, lastTrailValue, selectedBoosters)
       : []
+
+  // 턴이 바뀌면 로컬 UI 상태 초기화
+  useEffect(() => {
+    setPendingCard(null)
+    setSelectedBoosters([])
+    setActiveTrailIdx(null)
+  }, [room.turn, room.turnNumber])
 
   const handleRunnerCardClick = useCallback(
     (card: number) => {
@@ -65,21 +73,18 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
   const handleConfirmPlace = async () => {
     if (pendingCard === null) return
     await placeCard(roomId, pendingCard, selectedBoosters)
-    setPlacedThisTurn(prev => prev + 1)
     setPendingCard(null)
     setSelectedBoosters([])
   }
 
   const handlePass = async () => {
     await passTurn(roomId)
-    setPlacedThisTurn(0)
     setPendingCard(null)
     setSelectedBoosters([])
   }
 
   const handleEndRunnerTurn = async () => {
     await endRunnerTurn(roomId)
-    setPlacedThisTurn(0)
     setPendingCard(null)
     setSelectedBoosters([])
   }
@@ -102,8 +107,12 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
   }
 
   const handleSubmitGuess = async () => {
-    await submitGuess(roomId)
+    const correct = await submitGuess(roomId)
     setActiveTrailIdx(null)
+
+    if (guessResultTimer.current) clearTimeout(guessResultTimer.current)
+    setGuessResult(correct ? 'correct' : 'wrong')
+    guessResultTimer.current = setTimeout(() => setGuessResult(null), 2000)
   }
 
   const handleEndChaserTurn = async () => {
@@ -122,6 +131,12 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
         turnNumber={room.turnNumber}
         drawsRemaining={room.drawsRemaining}
       />
+
+      {guessResult && (
+        <div className={`${styles.guessResult} ${guessResult === 'correct' ? styles.guessCorrect : styles.guessWrong}`}>
+          {guessResult === 'correct' ? '정답! 카드가 공개됩니다' : '틀렸습니다. 다시 시도하세요'}
+        </div>
+      )}
 
       <CardTrail
         trail={room.trail}
@@ -154,7 +169,7 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
         turn={room.turn}
         phase={room.phase}
         turnNumber={room.turnNumber}
-        placedThisTurn={placedThisTurn}
+        placedThisTurn={room.cardsPlacedThisTurn}
         selectedBoosters={selectedBoosters}
         pendingCard={pendingCard}
         onConfirmPlace={handleConfirmPlace}

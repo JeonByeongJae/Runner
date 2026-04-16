@@ -33,6 +33,7 @@ export interface GameRoom {
   phase: Phase
   turnNumber: number        // 0부터 시작. 0=도망자첫턴, 1=추격자첫턴, 2+...
   drawsRemaining: number    // 이번 턴에 남은 드로우 횟수
+  cardsPlacedThisTurn: number  // 도망자가 현재 턴에 놓은 카드 수 (재연결 시 복원용)
   players: Players
   trail: TrailCard[]
   piles: Piles

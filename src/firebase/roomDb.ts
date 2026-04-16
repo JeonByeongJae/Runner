@@ -35,6 +35,7 @@ export async function joinRoom(roomId: string, chaserName: string): Promise<void
     phase: 'action',   // 도망자 첫 턴: 드로우 없이 바로 action
     turnNumber: 0,
     drawsRemaining: 0,
+    cardsPlacedThisTurn: 0,
     players: {
       runner: room.players.runner,
       chaser: { name: chaserName },
@@ -69,6 +70,7 @@ export function subscribeRoom(
       runnerHand: data.runnerHand ?? [],
       chaserHand: data.chaserHand ?? [],
       guessAttempt: data.guessAttempt ?? [],
+      cardsPlacedThisTurn: data.cardsPlacedThisTurn ?? 0,
     })
   })
   return () => off(roomRef)
@@ -130,6 +132,7 @@ export async function placeCard(
   await update(ref(db, `rooms/${roomId}`), {
     runnerHand: hand,
     trail,
+    cardsPlacedThisTurn: (room.cardsPlacedThisTurn ?? 0) + 1,
     ...(winner ? { winner, status: 'finished' } : {}),
   })
 }
@@ -145,6 +148,7 @@ export async function endRunnerTurn(roomId: string): Promise<void> {
     phase: 'draw',
     turnNumber: nextTurnNumber,
     drawsRemaining: nextTurnNumber === 1 ? 2 : 1, // 추격자 첫 턴: 2장, 이후: 1장
+    cardsPlacedThisTurn: 0,
     guessAttempt: [],
   })
 }
@@ -171,8 +175,8 @@ export async function toggleGuess(
   await update(ref(db, `rooms/${roomId}`), { guessAttempt })
 }
 
-// 추격자: 추리 제출
-export async function submitGuess(roomId: string): Promise<void> {
+// 추격자: 추리 제출 — 맞으면 true, 틀리면 false 반환
+export async function submitGuess(roomId: string): Promise<boolean> {
   const snapshot = await get(ref(db, `rooms/${roomId}`))
   const room = snapshot.val() as GameRoom
 
@@ -199,8 +203,10 @@ export async function submitGuess(roomId: string): Promise<void> {
       guessAttempt: [],
       ...(winner ? { winner, status: 'finished' } : {}),
     })
+    return true
   } else {
     await update(ref(db, `rooms/${roomId}`), { guessAttempt: [] })
+    return false
   }
 }
 
