@@ -12,7 +12,7 @@ export interface TrailCard {
 }
 
 export interface Players {
-  runner?: { name: string; uid?: string }
+  runner?: { name: string }
   chaser?: { name: string }
 }
 
@@ -38,7 +38,6 @@ export interface GameRoom {
   trail: TrailCard[]
   piles: Piles
   runnerHand: number[]
-  runnerHandCount: number
   chaserHand: number[]
   chaserBoard: Record<number, BoardMark>  // key: 1~42
   guessAttempt: GuessAttemptItem[]

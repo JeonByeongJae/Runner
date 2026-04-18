@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { subscribeRoom } from '../firebase/roomDb'
-import type { GameRoom, Role } from '../types/game'
+import type { GameRoom } from '../types/game'
 
-export function useRoom(roomId: string | null, role: Role | null) {
+export function useRoom(roomId: string | null) {
   const [room, setRoom] = useState<GameRoom | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!roomId || !role) {
+    if (!roomId) {
       setRoom(null)
       setLoading(false)
       return
@@ -16,9 +16,9 @@ export function useRoom(roomId: string | null, role: Role | null) {
     const unsubscribe = subscribeRoom(roomId, data => {
       setRoom(data)
       setLoading(false)
-    }, role)
+    })
     return unsubscribe
-  }, [roomId, role])
+  }, [roomId])
 
   return { room, loading }
 }
