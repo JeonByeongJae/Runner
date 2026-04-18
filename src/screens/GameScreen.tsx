@@ -31,6 +31,7 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
   const [activeTrailIdx, setActiveTrailIdx] = useState<number | null>(null)
   const [guessResult, setGuessResult] = useState<'correct' | 'wrong' | null>(null)
   const guessResultTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const prevGuessResult = useRef(room.lastGuessResult)
 
   const isMyTurn = room.turn === myRole
   const canDraw = isMyTurn && room.phase === 'draw'
@@ -44,6 +45,16 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
     ? getPlayableCards(room.runnerHand, lastTrailValue, selectedBoosters)
     : []
 
+  // Firebase lastGuessResult 변화 감지 → 양쪽 플레이어 모두 플래시
+  useEffect(() => {
+    if (room.lastGuessResult && room.lastGuessResult !== prevGuessResult.current) {
+      if (guessResultTimer.current) clearTimeout(guessResultTimer.current)
+      setGuessResult(room.lastGuessResult)
+      guessResultTimer.current = setTimeout(() => setGuessResult(null), 2000)
+    }
+    prevGuessResult.current = room.lastGuessResult
+  }, [room.lastGuessResult])
+
   // 턴이 바뀌면 로컬 UI 상태 초기화
   useEffect(() => {
     setPendingCard(null)
@@ -55,21 +66,29 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
     (card: number) => {
       if (!canPlaceMore || myRole !== 'runner') return
 
+      // 이미 부스터 → 제거
       if (selectedBoosters.includes(card)) {
         setSelectedBoosters(prev => prev.filter(b => b !== card))
-        if (pendingCard === card) setPendingCard(null)
         return
       }
 
-      if (playableCards.includes(card)) {
+      // 현재 pendingCard를 다시 클릭 → 부스터로 전환 (범위 내 카드도 부스터로 사용 가능)
+      if (card === pendingCard) {
+        setSelectedBoosters(prev => [...prev, card])
+        setPendingCard(null)
+        return
+      }
+
+      // Playable 카드이고 pendingCard 없음 → pendingCard로
+      if (playableCards.includes(card) && pendingCard === null) {
         setPendingCard(card)
         return
       }
 
-      // 범위 밖 카드 → 부스터로 추가
+      // 그 외 (non-playable, 또는 playable이지만 pendingCard 이미 있음) → 부스터로
       setSelectedBoosters(prev => [...prev, card])
     },
-    [canAct, myRole, selectedBoosters, playableCards, pendingCard]
+    [canPlaceMore, myRole, selectedBoosters, playableCards, pendingCard]
   )
 
   const handleConfirmPlace = async () => {
@@ -77,7 +96,6 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
     await placeCard(roomId, pendingCard, selectedBoosters)
     setPendingCard(null)
     setSelectedBoosters([])
-    // 최대 배치 수에 도달하면 자동 턴 종료 (게임 종료 시 App.tsx가 ResultScreen으로 전환)
     const newCount = room.cardsPlacedThisTurn + 1
     if (newCount >= maxPlace) {
       await endRunnerTurn(roomId)
@@ -89,7 +107,6 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
     setPendingCard(null)
     setSelectedBoosters([])
   }
-
 
   const handleDraw = async (pile: Pile) => {
     await drawCard(roomId, pile)
@@ -106,18 +123,13 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
   const handleBoardToggle = async (num: number) => {
     if (myRole !== 'chaser' || !canAct || activeTrailIdx === null) return
     await toggleGuess(roomId, activeTrailIdx, num)
-    // 번호 배정 후 activeTrailIdx 해제 (다음 카드 선택 유도)
     setActiveTrailIdx(null)
   }
 
   const handleSubmitGuess = async () => {
-    const correct = await submitGuess(roomId)
+    await submitGuess(roomId)
     setActiveTrailIdx(null)
-
-    if (guessResultTimer.current) clearTimeout(guessResultTimer.current)
-    setGuessResult(correct ? 'correct' : 'wrong')
-    guessResultTimer.current = setTimeout(() => setGuessResult(null), 2000)
-    // submitGuess 내부에서 턴 종료까지 처리됨
+    // 플래시는 room.lastGuessResult useEffect에서 처리
   }
 
   const handleClearGuess = async () => {
@@ -140,6 +152,7 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
         myRole={myRole}
         turnNumber={room.turnNumber}
         drawsRemaining={room.drawsRemaining}
+        lastAction={room.lastAction}
       />
 
       {guessResult && (
@@ -170,10 +183,15 @@ export default function GameScreen({ room, roomId, myRole }: Props) {
       )}
 
       {myRole === 'chaser' && (
-        <ChaserBoard
-          board={room.chaserBoard}
-          onToggle={canAct && activeTrailIdx !== null ? handleBoardToggle : undefined}
-        />
+        <>
+          <div className={styles.runnerHandCount}>
+            🏃 도망자 손패 {room.runnerHand.length}장
+          </div>
+          <ChaserBoard
+            board={room.chaserBoard}
+            onToggle={canAct && activeTrailIdx !== null ? handleBoardToggle : undefined}
+          />
+        </>
       )}
 
       <ActionPanel

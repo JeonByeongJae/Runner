@@ -47,6 +47,8 @@ export async function joinRoom(roomId: string, chaserName: string): Promise<void
     chaserBoard: createInitialChaserBoard(),
     guessAttempt: [],
     winner: null,
+    lastGuessResult: null,
+    lastAction: null,
   }
   await set(ref(db, `rooms/${roomId}`), gameState)
 }
@@ -128,6 +130,7 @@ export async function drawCard(roomId: string, pile: Pile): Promise<void> {
     chaserBoard[card] = 'eliminated'
   }
 
+  const roleStr = isRunner ? '도망자' : '추격자'
   await update(ref(db, `rooms/${roomId}`), {
     piles,
     ...(isRunner
@@ -135,6 +138,7 @@ export async function drawCard(roomId: string, pile: Pile): Promise<void> {
       : { chaserHand: newHand, chaserBoard }),
     drawsRemaining: newDrawsRemaining,
     phase: nextPhase,
+    lastAction: `${roleStr}가 카드를 뽑았습니다`,
   })
 }
 
@@ -165,16 +169,18 @@ export async function placeCard(
   const trail = [...room.trail, newTrailCard]
   const winner = checkWinner(trail)
 
+  const boosterStr = boosters.length > 0 ? ` (부스터 ${boosters.length}장)` : ''
   await update(ref(db, `rooms/${roomId}`), {
     runnerHand: hand,
     trail,
     cardsPlacedThisTurn: (room.cardsPlacedThisTurn ?? 0) + 1,
+    lastAction: `도망자가 카드를 놓았습니다${boosterStr}`,
     ...(winner ? { winner, status: 'finished' } : {}),
   })
 }
 
 // 도망자 턴 종료 → 추격자 턴
-export async function endRunnerTurn(roomId: string): Promise<void> {
+export async function endRunnerTurn(roomId: string, lastAction?: string): Promise<void> {
   const snapshot = await get(ref(db, `rooms/${roomId}`))
   const room = snapshot.val() as GameRoom
   const nextTurnNumber = room.turnNumber + 1
@@ -186,12 +192,14 @@ export async function endRunnerTurn(roomId: string): Promise<void> {
     drawsRemaining: nextTurnNumber === 1 ? 2 : 1, // 추격자 첫 턴: 2장, 이후: 1장
     cardsPlacedThisTurn: 0,
     guessAttempt: [],
+    lastGuessResult: null,
+    ...(lastAction !== undefined ? { lastAction } : {}),
   })
 }
 
 // 도망자: 패스
 export async function passTurn(roomId: string): Promise<void> {
-  await endRunnerTurn(roomId)
+  await endRunnerTurn(roomId, '도망자가 패스했습니다')
 }
 
 // 추격자: 추리 목록 토글
@@ -252,15 +260,18 @@ export async function submitGuess(roomId: string): Promise<boolean> {
       trail,
       chaserBoard,
       guessAttempt: [],
+      lastGuessResult: 'correct',
+      lastAction: '추격자가 추리에 성공했습니다!',
       ...(winner
         ? { winner, status: 'finished' }
         : { turn: 'runner', phase: 'draw', turnNumber: room.turnNumber + 1, drawsRemaining: 1 }),
     })
     return true
   } else {
-    // 틀렸으면 턴 넘기기
     await update(ref(db, `rooms/${roomId}`), {
       guessAttempt: [],
+      lastGuessResult: 'wrong',
+      lastAction: '추격자가 추리에 실패했습니다',
       turn: 'runner',
       phase: 'draw',
       turnNumber: room.turnNumber + 1,
@@ -286,5 +297,34 @@ export async function endChaserTurn(roomId: string): Promise<void> {
     turnNumber: room.turnNumber + 1,
     drawsRemaining: 1,
     guessAttempt: [],
+    lastGuessResult: null,
+    lastAction: '추격자가 턴을 종료했습니다',
+  })
+}
+
+// 같은 방에서 다시 게임 (역할 유지)
+export async function rematchRoom(roomId: string): Promise<void> {
+  const snapshot = await get(ref(db, `rooms/${roomId}`))
+  if (!snapshot.exists()) throw new Error('방을 찾을 수 없습니다.')
+  const room = snapshot.val() as GameRoom
+
+  const { runnerHand, piles } = initializeGameCards()
+  await set(ref(db, `rooms/${roomId}`), {
+    status: 'playing',
+    turn: 'runner',
+    phase: 'action',
+    turnNumber: 0,
+    drawsRemaining: 0,
+    cardsPlacedThisTurn: 0,
+    players: room.players,
+    trail: createStartingTrail(),
+    piles,
+    runnerHand,
+    chaserHand: [],
+    chaserBoard: createInitialChaserBoard(),
+    guessAttempt: [],
+    winner: null,
+    lastGuessResult: null,
+    lastAction: null,
   })
 }

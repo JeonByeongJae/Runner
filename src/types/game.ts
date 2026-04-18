@@ -42,4 +42,6 @@ export interface GameRoom {
   chaserBoard: Record<number, BoardMark>  // key: 1~42
   guessAttempt: GuessAttemptItem[]
   winner: Role | null
+  lastGuessResult?: 'correct' | 'wrong' | null
+  lastAction?: string | null
 }

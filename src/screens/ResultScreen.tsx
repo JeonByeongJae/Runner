@@ -8,6 +8,7 @@ interface Props {
   chaserName: string
   trail: TrailCard[]
   onPlayAgain: () => void
+  onRematch?: () => void
 }
 
 export default function ResultScreen({
@@ -17,6 +18,7 @@ export default function ResultScreen({
   chaserName,
   trail,
   onPlayAgain,
+  onRematch,
 }: Props) {
   const iWon = winner === myRole
   const winnerName = winner === 'runner' ? runnerName : chaserName
@@ -50,7 +52,7 @@ export default function ResultScreen({
                 <span className={styles.trailValue}>{card.value}</span>
                 {card.boosters && card.boosters.length > 0 && (
                   <span className={styles.trailBooster}>
-                    +{card.boosters.length}장
+                    {card.boosters.join(' ')}
                   </span>
                 )}
               </div>
@@ -58,9 +60,16 @@ export default function ResultScreen({
           </div>
         </div>
 
-        <button className={styles.btn} onClick={onPlayAgain}>
-          처음으로
-        </button>
+        <div className={styles.actions}>
+          {onRematch && (
+            <button className={styles.rematchBtn} onClick={onRematch}>
+              같은 방 다시 하기
+            </button>
+          )}
+          <button className={styles.btn} onClick={onPlayAgain}>
+            처음으로
+          </button>
+        </div>
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useRoom } from './hooks/useRoom'
 import type { Role } from './types/game'
+import { rematchRoom } from './firebase/roomDb'
 import HomeScreen from './screens/HomeScreen'
 import LobbyScreen from './screens/LobbyScreen'
 import GameScreen from './screens/GameScreen'
@@ -24,6 +25,12 @@ export default function App() {
     setSession(null)
   }
 
+  const handleRematch = async () => {
+    if (!session) return
+    await rematchRoom(session.roomId)
+    // room 구독이 자동으로 새 상태를 받아 GameScreen으로 전환됨
+  }
+
   if (!session) {
     return <HomeScreen onEnterRoom={handleEnterRoom} />
   }
@@ -45,6 +52,7 @@ export default function App() {
         chaserName={room.players.chaser?.name ?? '추격자'}
         trail={room.trail}
         onPlayAgain={handlePlayAgain}
+        onRematch={handleRematch}
       />
     )
   }

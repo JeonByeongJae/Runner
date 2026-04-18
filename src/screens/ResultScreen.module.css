@@ -118,8 +118,30 @@
   color: var(--color-gold);
 }
 
-.btn {
+.actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 8px;
+}
+
+.rematchBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-card-face);
+  color: var(--color-gold);
+  border: 1px solid var(--color-gold);
+  border-radius: 5px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.rematchBtn:hover {
+  background: #6a4a2e;
+}
+
+.btn {
   width: 100%;
   padding: 14px;
   background: var(--color-gold);

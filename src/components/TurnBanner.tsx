@@ -7,13 +7,17 @@ interface Props {
   myRole: Role
   turnNumber: number
   drawsRemaining: number
+  lastAction?: string | null
 }
 
 function getMessage({ turn, phase, myRole, turnNumber, drawsRemaining }: Props): string {
   const isMyTurn = turn === myRole
 
   if (!isMyTurn) {
-    return turn === 'runner' ? '도망자가 카드를 놓는 중...' : '추격자가 추리 중...'
+    if (turn === 'runner') {
+      return phase === 'draw' ? '도망자가 카드를 뽑는 중...' : '도망자가 카드를 놓는 중...'
+    }
+    return phase === 'draw' ? '추격자가 카드를 뽑는 중...' : '추격자가 추리 중...'
   }
 
   if (phase === 'draw') {
@@ -31,10 +35,15 @@ export default function TurnBanner(props: Props) {
   const isMyTurn = props.turn === props.myRole
   return (
     <div className={`${styles.banner} ${isMyTurn ? styles.myTurn : styles.waiting}`}>
-      <span className={styles.role}>
-        {isMyTurn ? (props.myRole === 'runner' ? '🏃 내 턴' : '🔍 내 턴') : '⏳ 대기'}
-      </span>
-      <span className={styles.message}>{getMessage(props)}</span>
+      <div className={styles.main}>
+        <span className={styles.role}>
+          {isMyTurn ? (props.myRole === 'runner' ? '🏃 내 턴' : '🔍 내 턴') : '⏳ 대기'}
+        </span>
+        <span className={styles.message}>{getMessage(props)}</span>
+      </div>
+      {props.lastAction && (
+        <div className={styles.lastAction}>{props.lastAction}</div>
+      )}
     </div>
   )
 }
