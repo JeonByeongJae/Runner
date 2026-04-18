@@ -15,11 +15,11 @@
 
 .primary {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   background: var(--color-gold);
   color: #1a0e08;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
 }
 
@@ -29,12 +29,12 @@
 
 .secondary {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   background: transparent;
   border: 1px solid var(--color-border);
   color: var(--color-text-muted);
   border-radius: 5px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .secondary:hover:not(:disabled) {
@@ -46,13 +46,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #7ab87a;
 }
 
 .clearBtn {
   background: none;
   color: var(--color-text-muted);
-  font-size: 12px;
+  font-size: 14px;
   padding: 2px 4px;
 }

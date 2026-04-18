@@ -7,7 +7,7 @@
 
 .label {
   color: var(--color-gold);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1px;
   margin-bottom: 8px;
 }
@@ -41,7 +41,7 @@
 
 .pileLabel {
   color: var(--color-gold);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .cardBack {
@@ -54,5 +54,5 @@
 
 .count {
   color: var(--color-text-muted);
-  font-size: 9px;
+  font-size: 12px;
 }

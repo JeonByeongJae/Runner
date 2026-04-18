@@ -43,6 +43,7 @@ export default function App() {
         myRole={session.myRole}
         runnerName={room.players.runner?.name ?? '도망자'}
         chaserName={room.players.chaser?.name ?? '추격자'}
+        trail={room.trail}
         onPlayAgain={handlePlayAgain}
       />
     )

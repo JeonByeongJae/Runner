@@ -1,4 +1,4 @@
-import type { Role } from '../types/game'
+import type { Role, TrailCard } from '../types/game'
 import styles from './ResultScreen.module.css'
 
 interface Props {
@@ -6,6 +6,7 @@ interface Props {
   myRole: Role
   runnerName: string
   chaserName: string
+  trail: TrailCard[]
   onPlayAgain: () => void
 }
 
@@ -14,6 +15,7 @@ export default function ResultScreen({
   myRole,
   runnerName,
   chaserName,
+  trail,
   onPlayAgain,
 }: Props) {
   const iWon = winner === myRole
@@ -37,6 +39,22 @@ export default function ResultScreen({
           <div className={styles.playerRow}>
             <span>🔍 {chaserName}</span>
             {winner === 'chaser' && <span className={styles.badge}>승</span>}
+          </div>
+        </div>
+
+        <div className={styles.trailSection}>
+          <div className={styles.trailLabel}>카드 배열 정답</div>
+          <div className={styles.trailCards}>
+            {trail.map((card, i) => (
+              <div key={i} className={styles.trailCard}>
+                <span className={styles.trailValue}>{card.value}</span>
+                {card.boosters && card.boosters.length > 0 && (
+                  <span className={styles.trailBooster}>
+                    +{card.boosters.length}장
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 

@@ -32,7 +32,7 @@
 
 .winnerText {
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .winnerName {
@@ -52,11 +52,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 12px 16px;
   background: #1a0e08;
   border: 1px solid var(--color-border-dim);
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .badge {
@@ -68,14 +68,64 @@
   border-radius: 4px;
 }
 
+.trailSection {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.trailLabel {
+  color: var(--color-gold);
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.trailCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.trailCard {
+  position: relative;
+  width: 44px;
+  height: 62px;
+  background: var(--color-card-face);
+  border: 2px solid var(--color-gold);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trailValue {
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.trailBooster {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #3a2510;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  padding: 1px 3px;
+  font-size: 10px;
+  color: var(--color-gold);
+}
+
 .btn {
   margin-top: 8px;
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: var(--color-gold);
   color: #1a0e08;
   border-radius: 5px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: bold;
 }
 

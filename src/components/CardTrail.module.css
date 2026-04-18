@@ -7,7 +7,7 @@
 
 .label {
   color: var(--color-gold);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1px;
   margin-bottom: 8px;
 }
@@ -64,13 +64,13 @@
 
 .value {
   color: var(--color-text);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: bold;
 }
 
 .secretValue {
   color: var(--color-gold);
-  font-size: 11px;
+  font-size: 14px;
   opacity: 0.7;
 }
 
@@ -82,7 +82,7 @@
   border: 1px solid var(--color-border);
   border-radius: 2px;
   padding: 1px 4px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--color-gold);
 }
 
@@ -95,7 +95,7 @@
   border: 1px solid #4fc3f7;
   border-radius: 2px;
   padding: 1px 4px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: bold;
   color: #4fc3f7;
 }
@@ -103,7 +103,7 @@
 /* 카드 선택 안내 문구 */
 .activeHint {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #4fc3f7;
   text-align: center;
 }

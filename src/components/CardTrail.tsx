@@ -51,7 +51,7 @@ export default function CardTrail({
                 <span className={styles.boosterBadge}>
                   {isRevealed
                     ? card.boosters.join(' ')
-                    : `+${card.boosters.reduce((s, b) => s + (b % 2 === 0 ? 2 : 1), 0)}`}
+                    : `+${card.boosters.length}장`}
                 </span>
               )}
               {/* 추격자에게 배정된 추리 숫자 표시 */}
