@@ -48,3 +48,11 @@
 }
 .joinBtn:disabled { opacity: 0.4; cursor: default; }
 .error { color: #e06060; font-size: 13px; text-align: center; }
+
+@media (min-width: 768px) {
+  .card { max-width: 480px; padding: 48px 40px; gap: 18px; }
+  .title { font-size: 36px; }
+  .input, .codeInput { font-size: 18px; padding: 12px 16px; }
+  .primaryBtn { font-size: 17px; padding: 14px 0; }
+  .joinBtn { font-size: 17px; padding: 12px 24px; }
+}

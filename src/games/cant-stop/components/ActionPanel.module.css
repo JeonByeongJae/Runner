@@ -33,3 +33,19 @@
 .btnStop { background: #1d4a1d; color: #6ddf6d; border: 1.5px solid #3db83d; }
 .btnRoll { background: #4a1a1a; color: #df6d6d; border: 1.5px solid #cc3333; }
 .waitMsg { text-align: center; color: #a08060; font-size: 14px; padding: 8px 0; }
+
+@media (min-width: 768px) {
+  .panel {
+    border-top: none;
+    border-left: 2px solid #8a6a30;
+    width: 300px;
+    flex-shrink: 0;
+    padding: 24px 20px;
+    gap: 16px;
+    justify-content: center;
+  }
+  .die { width: 56px; height: 56px; font-size: 28px; }
+  .btn { padding: 14px 0; font-size: 16px; }
+  .comboSum { font-size: 20px; }
+  .waitMsg { font-size: 16px; }
+}

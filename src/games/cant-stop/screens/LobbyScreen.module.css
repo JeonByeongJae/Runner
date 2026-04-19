@@ -35,3 +35,10 @@
   border-radius: 8px; color: #c8a45a; font-size: 13px; cursor: pointer;
 }
 .copyBtn:hover { background: #5c3a1e; }
+
+@media (min-width: 768px) {
+  .card { max-width: 480px; padding: 48px 40px; gap: 24px; }
+  .title { font-size: 28px; }
+  .code { font-size: 44px; letter-spacing: 12px; }
+  .player { font-size: 17px; padding: 12px 20px; }
+}

@@ -29,15 +29,17 @@ export default function GameScreen({ roomId, myKey }: Props) {
   return (
     <div className={styles.screen}>
       <div className={styles.banner}>{bannerText}</div>
-      <MountainBoard room={room} myKey={myKey} />
-      <ActionPanel
-        room={room}
-        isMyTurn={isMyTurn}
-        comboPlayable={comboPlayable}
-        onRoll={handleRoll}
-        onSelectCombo={handleSelectCombo}
-        onStop={handleStop}
-      />
+      <div className={styles.content}>
+        <MountainBoard room={room} myKey={myKey} />
+        <ActionPanel
+          room={room}
+          isMyTurn={isMyTurn}
+          comboPlayable={comboPlayable}
+          onRoll={handleRoll}
+          onSelectCombo={handleSelectCombo}
+          onStop={handleStop}
+        />
+      </div>
     </div>
   )
 }
