@@ -18,7 +18,7 @@ export function isComboPlayable(
   combo: [number, number],
   board: Record<string, ColumnState>,
   climbers: Record<string, number>,
-  player: PlayerKey
+  _player: PlayerKey
 ): boolean {
   const climberCount = Object.keys(climbers).length
   return combo.some(col => {
