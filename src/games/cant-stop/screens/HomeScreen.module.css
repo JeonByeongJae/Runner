@@ -1,0 +1,50 @@
+/* src/games/cant-stop/screens/HomeScreen.module.css */
+.screen {
+  min-height: 100vh;
+  background: var(--color-bg, #2c1810);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.card {
+  background: var(--color-surface, #1a0e08);
+  border: 2px solid #8a6a30;
+  border-radius: 16px;
+  padding: 32px 24px;
+  width: 100%; max-width: 360px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.title {
+  font-size: 28px; font-weight: bold;
+  color: #c8a45a; text-align: center; letter-spacing: 2px;
+}
+.subtitle {
+  font-size: 14px; color: #a08060; text-align: center; margin-top: -8px;
+}
+.input {
+  background: #2c1810; border: 1.5px solid #8a6a30; border-radius: 8px;
+  color: #f5e6c8; font-size: 16px; padding: 10px 14px; width: 100%;
+}
+.input:focus { outline: none; border-color: #c8a45a; }
+.primaryBtn {
+  background: #3a2010; border: 1.5px solid #c8a45a; border-radius: 10px;
+  color: #c8a45a; font-size: 15px; font-weight: bold;
+  padding: 12px 0; cursor: pointer; width: 100%;
+}
+.primaryBtn:disabled { opacity: 0.4; cursor: default; }
+.divider {
+  text-align: center; color: #a08060; font-size: 13px;
+}
+.joinRow { display: flex; gap: 8px; }
+.codeInput {
+  flex: 1; background: #2c1810; border: 1.5px solid #8a6a30; border-radius: 8px;
+  color: #f5e6c8; font-size: 16px; padding: 10px 14px;
+  text-transform: uppercase;
+}
+.codeInput:focus { outline: none; border-color: #c8a45a; }
+.joinBtn {
+  background: #2c1810; border: 1.5px solid #8a6a30; border-radius: 8px;
+  color: #f5e6c8; font-size: 15px; font-weight: bold;
+  padding: 10px 20px; cursor: pointer;
+}
+.joinBtn:disabled { opacity: 0.4; cursor: default; }
+.error { color: #e06060; font-size: 13px; text-align: center; }
