@@ -1,0 +1,72 @@
+import { useCallback, useEffect } from 'react'
+import { useRoom } from '../../../shared/hooks/useRoom'
+import {
+  subscribeRoom,
+  rollDiceAction,
+  applyCombo,
+  stopClimbing,
+  bust,
+} from '../../../shared/firebase/cantStopDb'
+import type { CantStopRoomState, PlayerKey } from '../types'
+import { getDiceCombos, isComboPlayable } from '../utils/dice'
+
+export function useCantStopGame(roomId: string | null, myKey: PlayerKey) {
+  const { room, loading } = useRoom<CantStopRoomState>(roomId, subscribeRoom)
+
+  const isMyTurn = room?.turn === myKey
+
+  const combos = room?.dice.length === 4
+    ? getDiceCombos(room.dice)
+    : []
+
+  const comboPlayable = combos.map(combo =>
+    room
+      ? isComboPlayable(combo, room.board, room.climbers ?? {}, myKey)
+      : false
+  )
+
+  const hasPlayableCombo = comboPlayable.some(Boolean)
+
+  // 주사위를 굴렸는데 가능한 조합이 없으면 자동 bust
+  useEffect(() => {
+    if (!roomId || !isMyTurn || !room) return
+    if (!room.rolledThisTurn) return
+    if (combos.length === 0) return
+    if (!hasPlayableCombo) {
+      bust(roomId)
+    }
+  }, [room?.rolledThisTurn, hasPlayableCombo, roomId, isMyTurn])
+
+  const handleRoll = useCallback(async () => {
+    if (!roomId || !isMyTurn) return
+    await rollDiceAction(roomId)
+  }, [roomId, isMyTurn])
+
+  const handleSelectCombo = useCallback(async (idx: number) => {
+    if (!roomId || !isMyTurn || !room) return
+    await applyCombo(roomId, combos[idx])
+  }, [roomId, isMyTurn, room, combos])
+
+  const handleStop = useCallback(async () => {
+    if (!roomId || !isMyTurn) return
+    await stopClimbing(roomId)
+  }, [roomId, isMyTurn])
+
+  const handleBust = useCallback(async () => {
+    if (!roomId) return
+    await bust(roomId)
+  }, [roomId])
+
+  return {
+    room,
+    loading,
+    isMyTurn,
+    combos,
+    comboPlayable,
+    hasPlayableCombo,
+    handleRoll,
+    handleSelectCombo,
+    handleStop,
+    handleBust,
+  }
+}
