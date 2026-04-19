@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useRoom } from '../../shared/hooks/useRoom'
-import type { Role } from './types/game'
-import { rematchRoom } from '../../shared/firebase/roomDb'
+import type { Role, GameRoom } from './types/game'
+import { subscribeRoom, rematchRoom } from '../../shared/firebase/roomDb'
 import HomeScreen from './screens/HomeScreen'
 import LobbyScreen from './screens/LobbyScreen'
 import GameScreen from './screens/GameScreen'
@@ -15,7 +15,7 @@ interface Session {
 
 export default function RunnerApp() {
   const [session, setSession] = useState<Session | null>(null)
-  const { room, loading } = useRoom(session?.roomId ?? null)
+  const { room, loading } = useRoom<GameRoom>(session?.roomId ?? null, subscribeRoom)
 
   const handleEnterRoom = (roomId: string, myRole: Role, myName: string) => {
     setSession({ roomId, myRole, myName })
