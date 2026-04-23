@@ -41,6 +41,7 @@ export default function ActionPanel({
 
   const handleComboClick = (idx: number) => {
     if (!comboPlayable[idx]) return
+    if (selectedCombo !== null) return
     setSelectedCombo(idx)
     onSelectCombo(idx)
   }
