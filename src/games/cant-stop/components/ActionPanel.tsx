@@ -5,6 +5,7 @@ import styles from './ActionPanel.module.css'
 interface Props {
   room: CantStopRoomState
   isMyTurn: boolean
+  submitting: boolean
   comboPlayable: boolean[]
   hasPlayableCombo: boolean
   selectedCombo: number | null
@@ -24,7 +25,7 @@ function getComboSplits(dice: number[]): [string, string][] {
 }
 
 export default function ActionPanel({
-  room, isMyTurn, comboPlayable, hasPlayableCombo,
+  room, isMyTurn, submitting, comboPlayable, hasPlayableCombo,
   selectedCombo, onSelectCombo, onRoll, onStop, onBust,
 }: Props) {
   const dice = room.dice ?? []
@@ -70,8 +71,8 @@ export default function ActionPanel({
         </div>
         <p className={styles.bustMsg}>가능한 조합이 없습니다!</p>
         <div className={styles.btnRow}>
-          <button className={`${styles.btn} ${styles.btnBust}`} onClick={onBust}>
-            차례 넘기기
+          <button className={`${styles.btn} ${styles.btnBust}`} onClick={onBust} disabled={submitting}>
+            {submitting ? '처리 중...' : '차례 넘기기'}
           </button>
         </div>
       </div>
@@ -136,14 +137,14 @@ export default function ActionPanel({
         <button
           className={`${styles.btn} ${styles.btnStop}`}
           onClick={handleStop}
-          disabled={mustSelectCombo || (climberCount === 0 && selectedCombo === null)}
+          disabled={submitting || mustSelectCombo || (climberCount === 0 && selectedCombo === null)}
         >
-          ✓ 캠프 확정
+          {submitting ? '처리 중...' : '✓ 캠프 확정'}
         </button>
         <button
           className={`${styles.btn} ${styles.btnRoll}`}
           onClick={handleRoll}
-          disabled={mustSelectCombo}
+          disabled={submitting || mustSelectCombo}
         >
           🎲 {room.rolledThisTurn ? '계속 굴리기' : '주사위 굴리기'}
         </button>

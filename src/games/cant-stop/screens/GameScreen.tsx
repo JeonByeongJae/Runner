@@ -36,7 +36,7 @@ export default function GameScreen({ roomId, myKey }: Props) {
   const [selectedCombo, setSelectedCombo] = useState<number | null>(null)
 
   const {
-    room, loading, isMyTurn,
+    room, loading, isMyTurn, submitting,
     combos, comboPlayable, hasPlayableCombo,
     handleRoll, handleStop, handleBust,
   } = useCantStopGame(roomId, myKey)
@@ -62,6 +62,7 @@ export default function GameScreen({ roomId, myKey }: Props) {
         <ActionPanel
           room={room}
           isMyTurn={isMyTurn}
+          submitting={submitting}
           comboPlayable={comboPlayable}
           hasPlayableCombo={hasPlayableCombo}
           selectedCombo={selectedCombo}
